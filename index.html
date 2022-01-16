@@ -13,12 +13,12 @@
 
         <img id="bullet" src="bullet.png" hidden />
 
-        <div id="score">
+        <div id="score" align="center">
             <h1>0</h1>
         </div>
 
         <div id="platform" align="center">
-            <h2>_______</h2>
+            <h2 id="wall">__________</h2>
         </div>
 
         <script>
@@ -42,16 +42,23 @@
                 $("#highScore").centerHeight();
                 $("#platform").centerWidth();
 
+                // Reload first time
+                if(!window.location.hash) {
+                    window.location = window.location + '#loaded';
+                    window.location.reload();
+                }
+
                 // Wakaranakutemoii
                 var stayInPlace = 999999;
 
                 var bowJs = document.getElementById("bow");
                 var bow = $("#bow");
                 var bowSprite = $("#bowSprite");
+                var bowSpeed = 8000;
 
                 var bulletJs = document.getElementById("bullet");
                 var bullet = $("#bullet");
-                var bulletSpeed = 1000;
+                var bulletSpeed = 600;
                 var bulletFired = false;
                 var score = 0;
 
@@ -67,37 +74,21 @@
                 var max = $(window).width();
                 var height = $(window).height();
 
-                // High score
-                if(window.localStorage.getItem("highScore") == null) {
-                    window.localStorage.setItem("highScore", 0);
-                }
-
-                // Bow movement
                 setInterval(function() {
-                    bow.animate({
-                        left: "+=" + (max - (bow.width() * 2)) + "px"
-                    }, 5000);
-
-                    bow.animate({
-                        left: "-=" + (max - (bow.width() * 2)) + "px"
-                    }, 5000);
-                }, 0);
-
-                setInterval(function() {
-                    if(animDone && platformSpeed != stayInPlace) {
+                    if(animDone) {
                         animDone = false;
 
-                        platform.animate({
-                            left: (max - (platform.width())) + "px"
-                        }, platformSpeed, function() {
+                        bow.animate({
+                            left: "+=" + (max - (bow.width() * 2)) + "px"
+                        }, bowSpeed, function() {
                             animDone = true;
                         });
 
                         animDone = false;
 
-                        platform.animate({
-                            left: 0 + "px"
-                        }, platformSpeed, function() {
+                        bow.animate({
+                            left: "-=" + (max - (bow.width() * 2)) + "px"
+                        }, bowSpeed, function() {
                             animDone = true;
                         });
                     }
@@ -140,32 +131,33 @@
 
                                 switch(score) {
                                     case 30:
-                                        platformSpeed = 10000;
+                                        bowSpeed = 5000;
+                                        break;
+                                    case 50:
+                                        $("#platform #wall").text("________");
+                                        $("#platform").centerWidth();
                                         break;
                                     case 100:
-                                        platformSpeed = 8000;
+                                        bowSpeed = 4000;
                                         break;
-                                    case 150:
-                                        platformSpeed = 5000;
+                                    case 130:
+                                        $("#platform #wall").text("______");
+                                        $("#platform").centerWidth();
                                         break;
-                                    case 250:
-                                        platformSpeed = 4000;
+                                    case 180:
+                                        bowSpeed = 3000;
+                                        break;
+                                    case 230:
+                                        $("#platform #wall").text("____");
+                                        $("#platform").centerWidth();
                                         break;
                                     case 300:
-                                        platformSpeed = 3000;
-                                        break;
-                                    case 500:
-                                        platformSpeed = 1500;
+                                        bowSpeed = 1500;
                                         break;
                                 }
                             } else {
-                                score -= 50;
-                                $("#score").html("<h1>" + score + "</h1>")
-                                $('#score').centerWidth();
-
-                                if(score <= 0) {
-                                    window.location.reload();
-                                }
+                                // Game over
+                                window.location.reload();
                             }
 
                             bulletFired = false;
