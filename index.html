@@ -13,8 +13,9 @@
 
         <img id="bullet" src="bullet.png" hidden />
 
-        <div id="score" align="center">
-            <h1>0</h1>
+        <div align="center">
+            <h1 id="score" >0</h1>
+            <b><br>High Score: <span id="highscore">0</span> by <span id="bearer">???</span></b>
         </div>
 
         <div id="platform" align="center">
@@ -36,11 +37,28 @@
                         $(this).height() / 2);
                 };
 
+                // XSS Injection Sanitization
+                function sanitize(string) {
+                    // Match all html tags
+                    var tag = /<[^<>]*>/ig;
+
+                    // Remove all html tags
+                    return string.replaceAll(tag, "");
+                }
+
                 // Initializations
                 $("#score").centerHeight();
                 $("#score").centerWidth();
                 $("#highScore").centerHeight();
                 $("#platform").centerWidth();
+
+                if(window.localStorage.getItem("highScore") == null && window.localStorage.getItem("highScoreBearer") == null) {
+                    window.localStorage.setItem("highScore", "0")
+                    window.localStorage.setItem("highScoreBearer", "???")
+                } else {
+                    $('#highscore').text(window.localStorage.getItem("highScore"))
+                    $('#bearer').text(window.localStorage.getItem("highScoreBearer"))
+                }
 
                 // Reload first time
                 if(!window.location.hash) {
@@ -69,6 +87,8 @@
                 var platformSpeed = stayInPlace;
 
                 var animDone = true;
+
+                var gotHighScore = false;
 
                 var min = 0;
                 var max = $(window).width();
@@ -126,8 +146,15 @@
                             if(bulletJs.style.left > platformLeft && bulletJs.style.left < platformRight) {
                                 // Hit
                                 score += 10
-                                $("#score").html("<h1>" + score + "</h1>")
+                                $("#score").html(score);
                                 $('#score').centerWidth();
+
+                                if(score > window.localStorage.getItem("highScore")) {
+                                    $('#highscore').text(score)
+                                    window.localStorage.setItem("highScore", score)
+                                    $('#bearer').text("???")
+                                    gotHighScore = true
+                                }
 
                                 switch(score) {
                                     case 30:
@@ -157,6 +184,10 @@
                                 }
                             } else {
                                 // Game over
+                                if(gotHighScore) {
+                                    var name = prompt("You got a record score. What's your name?")
+                                    window.localStorage.setItem("highScoreBearer", sanitize(name))
+                                }
                                 window.location.reload();
                             }
 
