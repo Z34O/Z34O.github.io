@@ -3,6 +3,7 @@
     <head>
         <title>Archy</title>
         <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+        <script src="https://unpkg.com/kvdb.io@v1.0"></script>
         <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     </head>
 
@@ -24,6 +25,9 @@
 
         <script>
             $(function() {
+                // Hey, fuck you no cheating
+                const db = KVdb.bucket('YAX44pHbF4RnyvFdNvNSgh').localStorage();  // Also if you wanna check out this cool key-value API go to https://kvdb.io/
+
                 // Center elements (absolute)
                 $.fn.centerWidth = function() {
                     this.css('left',
@@ -52,13 +56,8 @@
                 $("#highScore").centerHeight();
                 $("#platform").centerWidth();
 
-                if(window.localStorage.getItem("highScore") == null && window.localStorage.getItem("highScoreBearer") == null) {
-                    window.localStorage.setItem("highScore", "0")
-                    window.localStorage.setItem("highScoreBearer", "???")
-                } else {
-                    $('#highscore').text(window.localStorage.getItem("highScore"))
-                    $('#bearer').text(window.localStorage.getItem("highScoreBearer"))
-                }
+                db.getItem("highScore").then(highScore => $('#highscore').text(highScore));
+                db.getItem("highScoreBearer").then(highScoreBearer => $('#bearer').text(highScoreBearer));
 
                 // Reload first time
                 if(!window.location.hash) {
@@ -149,12 +148,14 @@
                                 $("#score").html(score);
                                 $('#score').centerWidth();
 
-                                if(score > window.localStorage.getItem("highScore")) {
-                                    $('#highscore').text(score)
-                                    window.localStorage.setItem("highScore", score)
-                                    $('#bearer').text("???")
-                                    gotHighScore = true
-                                }
+                                db.getItem("highScore").then(highScore => {
+                                    if(score > highScore) {
+                                        $('#highscore').text(score)
+                                        db.setItem("highScore", score)
+                                        $('#bearer').text("???")
+                                        gotHighScore = true
+                                    }
+                                });
 
                                 switch(score) {
                                     case 30:
@@ -186,7 +187,7 @@
                                 // Game over
                                 if(gotHighScore) {
                                     var name = prompt("You got a record score. What's your name?")
-                                    window.localStorage.setItem("highScoreBearer", sanitize(name))
+                                    db.setItem("highScoreBearer", sanitize(name))
                                 }
                                 window.location.reload();
                             }
