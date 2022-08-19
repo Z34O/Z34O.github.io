@@ -5,6 +5,7 @@
         <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
         <script src="https://unpkg.com/kvdb.io@v1.0"></script>
         <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+        <meta charset="utf-8" />
     </head>
 
     <body>
@@ -16,17 +17,17 @@
 
         <div align="center">
             <h1 id="score" >0</h1>
-            <b><br>High Score: <span id="highscore">0</span> by <span id="bearer">???</span></b>
+            <b><br>ハイスコア： <span id="highscore">0</span><br />ポイントゲッター： <span id="bearer">???</span></b>
         </div>
 
         <div id="platform" align="center">
-            <h2 id="wall">__________</h2>
+            <h2 id="wall">_____</h2>
         </div>
 
         <script>
             $(function() {
-                // Hey, fuck you no cheating
-                const db = KVdb.bucket('YAX44pHbF4RnyvFdNvNSgh').localStorage();  // Also if you wanna check out this cool key-value API go to https://kvdb.io/
+                // pls no cheat :((
+                const db = KVdb.bucket('YAX44pHbF4RnyvFdNvNSgh').localStorage();
 
                 // Center elements (absolute)
                 $.fn.centerWidth = function() {
@@ -71,7 +72,7 @@
                 var bowJs = document.getElementById("bow");
                 var bow = $("#bow");
                 var bowSprite = $("#bowSprite");
-                var bowSpeed = 8000;
+                var bowSpeed = 5000;
 
                 var bulletJs = document.getElementById("bullet");
                 var bullet = $("#bullet");
@@ -159,34 +160,30 @@
 
                                 switch(score) {
                                     case 30:
-                                        bowSpeed = 5000;
-                                        break;
-                                    case 50:
-                                        $("#platform #wall").text("________");
-                                        $("#platform").centerWidth();
-                                        break;
-                                    case 100:
                                         bowSpeed = 4000;
                                         break;
+                                    case 100:
+                                        bowSpeed = 3000;
+                                        break;
                                     case 130:
-                                        $("#platform #wall").text("______");
+                                        $("#platform #wall").text("_____");
                                         $("#platform").centerWidth();
                                         break;
                                     case 180:
-                                        bowSpeed = 3000;
+                                        bowSpeed = 2000;
                                         break;
                                     case 230:
-                                        $("#platform #wall").text("____");
+                                        $("#platform #wall").text("___");
                                         $("#platform").centerWidth();
                                         break;
                                     case 300:
-                                        bowSpeed = 1500;
+                                        bowSpeed = 100;
                                         break;
                                 }
                             } else {
                                 // Game over
                                 if(gotHighScore) {
-                                    var name = prompt("You got a record score. What's your name?")
+                                    var name = prompt("ポイントゲッターになった！ 名前おしえろ")
                                     db.setItem("highScoreBearer", sanitize(name))
                                 }
                                 window.location.reload();
